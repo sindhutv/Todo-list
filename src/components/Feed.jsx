@@ -10,7 +10,6 @@ import { Box } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ErrorBoundary } from 'react-error-boundary';
-import { setEditedTodo } from '../actions/editActions'; // Import the new action
 
 const Feed = () => {
   const { todos } = useSelector((state) => state.todo);
@@ -27,10 +26,6 @@ const Feed = () => {
 
   const handleDeleteTodo = (id) => {
     dispatch(deleteTodo(id));
-  };
-
-  const handleEditClick = (todo) => {
-    dispatch(setEditedTodo(todo)); // Dispatch the action with the edited todo
   };
 
   const theme = createTheme();
@@ -63,13 +58,12 @@ const Feed = () => {
             <ul className="todo-list">
               {todos.map((todo) => (
                 <li key={todo.id}>
-                  <span>{todo.text}</span>
-                  <Button variant="contained" color="secondary" onClick={() => handleDeleteTodo(todo.id)}>
-                    Delete
-                  </Button>
-                  <Button variant="contained" color="primary" onClick={() => handleEditClick(todo)}>
-                    Edit
-                  </Button>
+                  <Box display="flex" alignItems="center">
+                    <span>{todo.text}</span>
+                    <Button variant="contained" color="secondary" onClick={() => handleDeleteTodo(todo.id)}>
+                      Delete
+                    </Button>
+                  </Box>
                 </li>
               ))}
             </ul>

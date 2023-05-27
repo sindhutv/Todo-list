@@ -5,8 +5,6 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
-import { useDispatch, useSelector } from 'react-redux'; 
-import { setEditedTodo } from '../actions/editActions'; 
 
 const Rightbar = () => {
   const [title, setTitle] = useState('');
@@ -14,14 +12,11 @@ const Rightbar = () => {
   const [editedTitle, setEditedTitle] = useState('');
   const [editedDescription, setEditedDescription] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const editedTodo = useSelector((state) => state.edit.editedTodo); 
-  const dispatch = useDispatch();
 
   const handleEditClick = () => {
     setEditedTitle(title);
     setEditedDescription(description);
     setIsEditing(true);
-    dispatch(setEditedTodo(null)); // Reset the edited todo in the Redux state
   };
 
   const handleSaveClick = () => {
@@ -42,12 +37,6 @@ const Rightbar = () => {
   const descriptionOptions = ['improves eyesight', 'Good for digestion', 'Tastes good', 'Good for skin', 'Goes well with coffee'];
 
   const cardHeight = isEditing ? 'auto' : '250px';
-
-  // Set the initial values based on the edited todo from Redux
-  if (editedTodo && !isEditing) {
-    setTitle(editedTodo.title);
-    setDescription(editedTodo.description);
-  }
 
   return (
     <Box
