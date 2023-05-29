@@ -5,15 +5,19 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import { CardHeader } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import { addTodo, deleteTodo } from '../actions/todoActions';
-import { Box } from '@mui/material';
+import { Box, Drawer, Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { ErrorBoundary } from 'react-error-boundary';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { addTodo, deleteTodo, editTodo } from '../actions/todoActions';
 
 const Feed = () => {
   const { todos } = useSelector((state) => state.todo);
   const [newTodoText, setNewTodoText] = useState('');
+  const [editingTodo, setEditingTodo] = useState(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // State for drawer
   const dispatch = useDispatch();
 
   const handleAddTodo = () => {
@@ -26,6 +30,31 @@ const Feed = () => {
 
   const handleDeleteTodo = (id) => {
     dispatch(deleteTodo(id));
+  };
+
+  const handleEditTodo = (todo) => {
+    setEditingTodo({ ...todo });
+    setIsDrawerOpen(true); // Open the drawer
+  };
+
+  const handleSaveTodo = () => {
+    const updatedTodos = todos.map((todo) => {
+      if (todo.id === editingTodo.id) {
+        return {
+          ...todo,
+          text: editingTodo.text,
+          description: editingTodo.description,
+        };
+      }
+      return todo;
+    });
+
+    dispatch(editTodo({
+      todos: updatedTodos,
+    }));
+
+    setEditingTodo(null);
+    setIsDrawerOpen(false); // Close the drawer
   };
 
   const theme = createTheme();
@@ -44,32 +73,112 @@ const Feed = () => {
         <Card sx={{ width: '300px', height: '300px', display: 'flex', flexDirection: 'column' }}>
           <CardHeader title="Todo List" />
           <CardContent>
-            <div className="add-todo">
+            <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
               <TextField
                 type="text"
                 value={newTodoText}
                 onChange={(e) => setNewTodoText(e.target.value)}
                 placeholder="Enter a new todo"
               />
-              <Button variant="contained" color="primary" onClick={handleAddTodo}>
+              <Button variant="contained" color="primary" onClick={handleAddTodo} sx={{ marginLeft: '1rem' }}>
                 +
               </Button>
-            </div>
+            </Box>
             <ul className="todo-list">
               {todos.map((todo) => (
                 <li key={todo.id}>
-                  <Box display="flex" alignItems="center">
-                    <span>{todo.text}</span>
-                    <Button variant="contained" color="secondary" onClick={() => handleDeleteTodo(todo.id)}>
-                      Delete
-                    </Button>
-                  </Box>
+                  <Grid container alignItems="center" justifyContent="space-between">
+                    <Grid item>
+                      {editingTodo && editingTodo.id === todo.id ? (
+                        <>
+                          <TextField
+                            type="text"
+                            value={editingTodo.text}
+                            onChange={(e) =>
+                              setEditingTodo({
+                                ...editingTodo,
+                                text: e.target.value,
+                              })
+                            }
+                          />
+                          <Button variant="contained" color="info" onClick={handleSaveTodo}>
+                            Save
+                          </Button>
+                        </>
+                      ) : (
+                        <>
+                          <span>{todo.text}</span>
+                          <Button variant="contained" color="secondary" onClick={() => handleDeleteTodo(todo.id)}>
+                            <DeleteIcon/>
+                          </Button>
+                        </>
+                      )}
+                    </Grid>
+                    <Grid item>
+                      <Button variant="contained" color="info" onClick={() => handleEditTodo(todo)}>
+                        <EditIcon />
+                      </Button>
+                    </Grid>
+                  </Grid>
+                  {editingTodo && editingTodo.id === todo.id && ( // Display the description box conditionally
+                    <TextField
+                      type="text"
+                      value={editingTodo.description}
+                      onChange={(e) =>
+                        setEditingTodo({
+                          ...editingTodo,
+                          description: e.target.value,
+                        })
+                      }
+                      label="Description"
+                      multiline
+                      rows={4}
+                      variant="outlined"
+                      sx={{ marginTop: '1rem' }}
+                    />
+                  )}
                 </li>
               ))}
             </ul>
           </CardContent>
         </Card>
       </Box>
+      <Drawer anchor="right" open={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+        {/* Content of the drawer */}
+        {editingTodo && (
+          <Box sx={{ padding: '2rem' }}>
+            <TextField
+              type="text"
+              value={editingTodo.text}
+              onChange={(e) =>
+                setEditingTodo({
+                  ...editingTodo,
+                  text: e.target.value,
+                })
+              }
+              sx={{ marginBottom: '1rem' }}
+            />
+            <TextField
+              type="text"
+              value={editingTodo.description}
+              onChange={(e) =>
+                setEditingTodo({
+                  ...editingTodo,
+                  description: e.target.value,
+                })
+              }
+              label="Description"
+              multiline
+              rows={4}
+              variant="outlined"
+              sx={{ marginBottom: '1rem' }}
+            />
+            <Button variant="contained" color="info" onClick={handleSaveTodo}>
+              Save
+            </Button>
+          </Box>
+        )}
+      </Drawer>
     </>
   );
 };

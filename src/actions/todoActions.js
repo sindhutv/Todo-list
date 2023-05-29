@@ -1,36 +1,22 @@
-export const addTodo = (newTodo) => ({
+// todoActions.js
+
+export const addTodo = (newTodo) => {
+  return {
     type: 'ADD_TODO',
     payload: newTodo,
-  });
-  
-  export const deleteTodo = (id) => ({
+  };
+};
+
+export const deleteTodo = (id) => {
+  return {
     type: 'DELETE_TODO',
     payload: id,
-  });
-  
-  export const startEdit = (id, text) => ({
-    type: 'START_EDIT',
-    payload: { id, text },
-  });
-  
-  export const cancelEdit = () => ({
-    type: 'CANCEL_EDIT',
-  });
-  
-  export const saveTodo = (id, text) => ({
-    type: 'SAVE_TODO',
-    payload: { id, text },
-  });
-  
-  export const setNewTodoText = (text) => ({
-    type: 'SET_NEW_TODO_TEXT',
-    payload: text,
-  });
-  
-  export const setEditedTodoText = (text) => ({
-    type: 'SET_EDITED_TODO_TEXT',
-    payload: text,
-  });
-  
- 
-  
+  };
+};
+
+export const editTodo = (editedTodos) => {
+  return {
+    type: 'EDIT_TODO',
+    payload: editedTodos,
+  };
+};
