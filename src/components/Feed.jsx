@@ -49,11 +49,9 @@ const Feed = () => {
       return todo;
     });
 
-    dispatch(editTodo({
-      todos: updatedTodos,
-    }));
+    dispatch(editTodo(updatedTodos)); // Dispatch the updated todos
 
-    setEditingTodo(null);
+    setEditingTodo(null); // Clear the editing todo
     setIsDrawerOpen(false); // Close the drawer
   };
 
@@ -90,37 +88,34 @@ const Feed = () => {
                   <Grid container alignItems="center" justifyContent="space-between">
                     <Grid item>
                       {editingTodo && editingTodo.id === todo.id ? (
-                        <>
-                          <TextField
-                            type="text"
-                            value={editingTodo.text}
-                            onChange={(e) =>
-                              setEditingTodo({
-                                ...editingTodo,
-                                text: e.target.value,
-                              })
-                            }
-                          />
-                          <Button variant="contained" color="info" onClick={handleSaveTodo}>
-                            Save
-                          </Button>
-                        </>
+                        <TextField
+                          type="text"
+                          value={editingTodo.text}
+                          onChange={(e) =>
+                            setEditingTodo({
+                              ...editingTodo,
+                              text: e.target.value,
+                            })
+                          }
+                        />
                       ) : (
+                        <span>{todo.text}</span>
+                      )}
+                    </Grid>
+                    <Grid item>
+                      {editingTodo && editingTodo.id === todo.id ? null : (
                         <>
-                          <span>{todo.text}</span>
                           <Button variant="contained" color="secondary" onClick={() => handleDeleteTodo(todo.id)}>
-                            <DeleteIcon/>
+                            <DeleteIcon />
+                          </Button>
+                          <Button variant="contained" color="info" onClick={() => handleEditTodo(todo)}>
+                            <EditIcon />
                           </Button>
                         </>
                       )}
                     </Grid>
-                    <Grid item>
-                      <Button variant="contained" color="info" onClick={() => handleEditTodo(todo)}>
-                        <EditIcon />
-                      </Button>
-                    </Grid>
                   </Grid>
-                  {editingTodo && editingTodo.id === todo.id && ( // Display the description box conditionally
+                  {editingTodo && editingTodo.id === todo.id && (
                     <TextField
                       type="text"
                       value={editingTodo.description}
@@ -157,7 +152,7 @@ const Feed = () => {
                 })
               }
               sx={{ marginBottom: '1rem' }}
-            />
+            /><br/>
             <TextField
               type="text"
               value={editingTodo.description}
@@ -172,10 +167,12 @@ const Feed = () => {
               rows={4}
               variant="outlined"
               sx={{ marginBottom: '1rem' }}
-            />
-            <Button variant="contained" color="info" onClick={handleSaveTodo}>
-              Save
-            </Button>
+            /><br/>
+            {editingTodo && editingTodo.id && (
+              <Button variant="contained" color="info" onClick={handleSaveTodo}>
+                Save
+              </Button>
+            )}
           </Box>
         )}
       </Drawer>
